@@ -1,9 +1,7 @@
 :root {
   color: #ffffff;
   background: #ff5a00;
-  font-family:
-    Inter, "Helvetica Neue", Helvetica, Arial, system-ui, -apple-system,
-    sans-serif;
+  font-family: "Anton", Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   font-synthesis: none;
   text-rendering: geometricPrecision;
 }
@@ -139,9 +137,9 @@ textarea {
   overflow-wrap: anywhere;
   white-space: pre-wrap;
   font-size: clamp(36px, 4.7vw, 64px);
-  font-weight: 650;
-  letter-spacing: -0.05em;
-  line-height: 0.98;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1;
   caret-color: #ff7a00;
 }
 
