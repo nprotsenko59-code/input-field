@@ -86,8 +86,33 @@ app.innerHTML = `
   <div class="scene">
     <canvas class="heat-field" aria-hidden="true"></canvas>
 
-    <main class="converter" aria-label="Currency converter">
-      <div class="converter__sections">
+    <div class="converter-stack">
+      <div
+        class="converter-modes"
+        role="tablist"
+        aria-label="Transfer mode"
+      >
+        <button
+          class="converter-modes__tab converter-modes__tab--active"
+          type="button"
+          role="tab"
+          aria-selected="true"
+        >
+          Convert
+        </button>
+        <button
+          class="converter-modes__tab"
+          type="button"
+          role="tab"
+          aria-selected="false"
+          disabled
+        >
+          Send
+        </button>
+      </div>
+
+      <main class="converter" aria-label="Currency converter">
+        <div class="converter__sections">
         <section class="converter__section">
           <label class="converter__label" for="amount">Convert</label>
           <div class="converter__value-row">
@@ -187,8 +212,9 @@ app.innerHTML = `
             id="conversion-rate"
           ></p>
         </section>
-      </div>
-    </main>
+        </div>
+      </main>
+    </div>
 
     <p class="scene__note">
       Instant conversion · Demo rates
