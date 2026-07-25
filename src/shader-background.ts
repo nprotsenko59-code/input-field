@@ -131,12 +131,12 @@ void main() {
 
   vec3 color = heatPalette(field);
 
-  // Static interleaved-gradient dithering prevents banding without shimmer.
-  float dither = fract(
+  // Static interleaved grain adds texture without shimmer or extra layers.
+  float grain = fract(
     52.9829189 *
     fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715)))
   ) - 0.5;
-  color += dither / 255.0;
+  color += grain * 0.016;
 
   outColor = vec4(color, 1.0);
 }
