@@ -103,11 +103,11 @@ app.innerHTML = `
             <input
               id="amount"
               class="converter__amount"
-              type="number"
-              min="0"
-              step="any"
+              type="text"
               inputmode="decimal"
               value="1000"
+              autocomplete="off"
+              spellcheck="false"
               aria-describedby="from-currency-name"
             />
             <div class="converter__select-wrap">
@@ -124,15 +124,17 @@ app.innerHTML = `
         </section>
 
         <section class="converter__section">
-          <p class="converter__label">To</p>
+          <label class="converter__label" for="converted-amount">To</label>
           <div class="converter__value-row">
-            <output
+            <input
               id="converted-amount"
-              class="converter__output"
-              for="amount from-currency to-currency"
-              aria-live="polite"
-              aria-atomic="true"
-            ></output>
+              class="converter__amount"
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+              spellcheck="false"
+              aria-describedby="to-currency-name conversion-rate"
+            />
             <div class="converter__select-wrap">
               <select
                 id="to-currency"
@@ -163,7 +165,7 @@ const fromSelect =
   requireElement<HTMLSelectElement>("#from-currency");
 const toSelect = requireElement<HTMLSelectElement>("#to-currency");
 const convertedAmount =
-  requireElement<HTMLOutputElement>("#converted-amount");
+  requireElement<HTMLInputElement>("#converted-amount");
 const fromCurrencyName =
   requireElement<HTMLElement>("#from-currency-name");
 const toCurrencyName =
@@ -188,11 +190,60 @@ function formatAmount(value: number, currency: Currency): string {
   }).format(value);
 }
 
-function updateConversion(): void {
+const numberSeparators = new Intl.NumberFormat()
+  .formatToParts(12345.6)
+  .reduce(
+    (separators, part) => {
+      if (part.type === "group") {
+        separators.group = part.value;
+      }
+
+      if (part.type === "decimal") {
+        separators.decimal = part.value;
+      }
+
+      return separators;
+    },
+    { group: "", decimal: "." },
+  );
+
+function parseAmount(value: string): number {
+  let normalized = value.trim().replace(/\s/g, "");
+
+  if (numberSeparators.group) {
+    normalized = normalized
+      .split(numberSeparators.group)
+      .join("");
+  }
+
+  if (numberSeparators.decimal !== ".") {
+    normalized = normalized.replace(numberSeparators.decimal, ".");
+  }
+
+  return normalized === "" ? Number.NaN : Number(normalized);
+}
+
+type ConversionDirection = "from" | "to";
+
+let conversionDirection: ConversionDirection = "from";
+
+function updateConversion(
+  direction: ConversionDirection = conversionDirection,
+): void {
   const fromCurrency = getCurrency(fromSelect.value);
   const toCurrency = getCurrency(toSelect.value);
-  const amount = amountInput.valueAsNumber;
   const rate = toCurrency.unitsPerUsd / fromCurrency.unitsPerUsd;
+  const sourceInput =
+    direction === "from" ? amountInput : convertedAmount;
+  const targetInput =
+    direction === "from" ? convertedAmount : amountInput;
+  const sourceAmount = parseAmount(sourceInput.value);
+  const convertedValue =
+    direction === "from"
+      ? sourceAmount * rate
+      : sourceAmount / rate;
+  const targetCurrency =
+    direction === "from" ? toCurrency : fromCurrency;
 
   fromCurrencyName.textContent = fromCurrency.name;
   toCurrencyName.textContent = toCurrency.name;
@@ -204,15 +255,22 @@ function updateConversion(): void {
     },
   ).format(rate)} ${toCurrency.code}`;
 
-  convertedAmount.textContent =
-    Number.isFinite(amount) && amount >= 0
-      ? formatAmount(amount * rate, toCurrency)
-      : "—";
+  targetInput.value =
+    Number.isFinite(sourceAmount) && sourceAmount >= 0
+      ? formatAmount(convertedValue, targetCurrency)
+      : "";
 }
 
-amountInput.addEventListener("input", updateConversion);
-fromSelect.addEventListener("change", updateConversion);
-toSelect.addEventListener("change", updateConversion);
+amountInput.addEventListener("input", () => {
+  conversionDirection = "from";
+  updateConversion();
+});
+convertedAmount.addEventListener("input", () => {
+  conversionDirection = "to";
+  updateConversion();
+});
+fromSelect.addEventListener("change", () => updateConversion());
+toSelect.addEventListener("change", () => updateConversion());
 updateConversion();
 
 const heatField = new HeatFieldBackground(canvas, {

@@ -61,8 +61,8 @@ select {
 }
 
 .converter {
-  width: calc(100% - 48px);
-  max-width: 960px;
+  width: calc(100% - 80px);
+  max-width: 900px;
   min-width: 0;
   border: 0;
   border-radius: 0;
@@ -105,8 +105,7 @@ select {
   align-items: center;
 }
 
-.converter__amount,
-.converter__output {
+.converter__amount {
   display: block;
   width: 100%;
   min-width: 0;
@@ -124,12 +123,6 @@ select {
 .converter__amount {
   appearance: textfield;
   caret-color: #ff8a00;
-}
-
-.converter__amount::-webkit-inner-spin-button,
-.converter__amount::-webkit-outer-spin-button {
-  margin: 0;
-  appearance: none;
 }
 
 .converter__amount:focus {
@@ -213,7 +206,7 @@ select {
 
 @media (max-width: 640px) {
   .converter {
-    width: calc(100vw - 28px);
+    width: calc(100vw - 40px);
     border-radius: 0;
   }
 
@@ -230,8 +223,7 @@ select {
     gap: 12px;
   }
 
-  .converter__amount,
-  .converter__output {
+  .converter__amount {
     font-size: clamp(40px, 12vw, 52px);
   }
 
