@@ -26,12 +26,11 @@ precision highp float;
 in vec2 vUv;
 
 uniform vec2 uResolution;
-uniform float uTime;
 uniform float uWarpStrength;
+uniform vec2 uOrbit;
+uniform vec2 uBlobCenters[6];
 
 out vec4 outColor;
-
-const float TAU = 6.28318530718;
 
 float hash21(vec2 p) {
   p = fract(p * vec2(123.34, 456.21));
@@ -52,22 +51,12 @@ float valueNoise(vec2 p) {
   return mix(mix(a, b, curve.x), mix(c, d, curve.x), curve.y);
 }
 
-float broadNoise(vec2 p) {
-  float value = 0.0;
-  float amplitude = 0.58;
-
-  for (int octave = 0; octave < 3; octave++) {
-    value += valueNoise(p) * amplitude;
-    p = p * 1.92 + vec2(7.4, -3.8);
-    amplitude *= 0.42;
-  }
-
-  return value;
-}
-
 float blob(vec2 point, vec2 center, vec2 radius) {
   vec2 delta = (point - center) / radius;
-  return exp(-2.05 * dot(delta, delta));
+  float distanceSquared = dot(delta, delta);
+  float denominator = 1.0 + 1.65 * distanceSquared;
+  float softCutoff = 1.0 - smoothstep(2.25, 4.0, distanceSquared);
+  return softCutoff / (denominator * denominator);
 }
 
 vec3 heatPalette(float value) {
@@ -86,17 +75,15 @@ void main() {
   vec2 point = vUv * 2.0 - 1.0;
   point.x *= aspect;
 
-  // A circular time path keeps the low-frequency deformation seamless.
-  float phase = uTime * TAU / 28.0;
-  vec2 orbit = vec2(cos(phase), sin(phase));
-
-  float warpX = broadNoise(point * 0.72 + orbit * 0.52);
-  float warpY = broadNoise(
-    point * 0.72 + vec2(6.7, -4.1) + vec2(-orbit.y, orbit.x) * 0.48
+  // One low-frequency field replaces three multi-octave noise passes.
+  float warpNoise = valueNoise(point * 0.68 + uOrbit * 0.46);
+  float centeredWarp = warpNoise - 0.5;
+  vec2 warpDirection = vec2(
+    0.78 + 0.22 * point.y,
+    -0.63 + 0.18 * point.x
   );
-
   vec2 warpedPoint =
-    point + (vec2(warpX, warpY) - 0.5) * uWarpStrength;
+    point + warpDirection * centeredWarp * uWarpStrength * 1.35;
 
   // Start with a golden top and red-orange lower half.
   float field = 0.12 + vUv.y * 0.68;
@@ -104,12 +91,12 @@ void main() {
   // Broad yellow pools keep the upper edge and outer frame luminous.
   field += 0.28 * blob(
     warpedPoint,
-    vec2(-aspect * 0.44 + 0.12 * sin(phase * 1.2), 0.76),
+    uBlobCenters[0],
     vec2(0.72, 0.54)
   );
   field += 0.24 * blob(
     warpedPoint,
-    vec2(aspect * 0.46 + 0.10 * cos(phase * 0.9), 0.68),
+    uBlobCenters[1],
     vec2(0.70, 0.62)
   );
   field += 0.10 * smoothstep(aspect * 0.22, aspect * 0.94, abs(point.x));
@@ -117,33 +104,36 @@ void main() {
   // Moving red pools produce the soft hot zones visible in the reference.
   field -= 0.54 * blob(
     warpedPoint,
-    vec2(0.10 * sin(phase * 0.84), -0.76 + 0.08 * cos(phase)),
+    uBlobCenters[2],
     vec2(1.18, 0.68)
   );
   field -= 0.30 * blob(
     warpedPoint,
-    vec2(-aspect * 0.50 + 0.12 * cos(phase * 1.14), 0.02),
+    uBlobCenters[3],
     vec2(0.42, 0.92)
   );
   field -= 0.26 * blob(
     warpedPoint,
-    vec2(aspect * 0.52 + 0.10 * sin(phase * 1.06), -0.05),
+    uBlobCenters[4],
     vec2(0.46, 0.88)
   );
   field -= 0.18 * blob(
     warpedPoint,
-    vec2(0.18 * cos(phase * 0.72), 0.20 + 0.12 * sin(phase * 0.91)),
+    uBlobCenters[5],
     vec2(0.76, 0.54)
   );
 
   // Keep the motion organic but deliberately broad—never smoky or grainy.
-  field += (broadNoise(point * 0.92 - orbit * 0.32) - 0.5) * 0.075;
+  field += centeredWarp * 0.065;
   field = clamp(field, 0.0, 1.0);
 
   vec3 color = heatPalette(field);
 
-  // Sub-pixel dithering prevents banding without adding visible texture.
-  float dither = hash21(gl_FragCoord.xy + uTime) - 0.5;
+  // Static interleaved-gradient dithering prevents banding without shimmer.
+  float dither = fract(
+    52.9829189 *
+    fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715)))
+  ) - 0.5;
   color += dither / 255.0;
 
   outColor = vec4(color, 1.0);
@@ -153,7 +143,7 @@ void main() {
 const DEFAULT_OPTIONS: Required<HeatFieldOptions> = {
   speed: 1,
   warpStrength: 0.34,
-  pixelRatioCap: 1.75,
+  pixelRatioCap: 1,
 };
 
 export class HeatFieldBackground {
@@ -166,9 +156,11 @@ export class HeatFieldBackground {
   private gl: WebGL2RenderingContext | null = null;
   private program: WebGLProgram | null = null;
   private vertexArray: WebGLVertexArrayObject | null = null;
-  private timeLocation: WebGLUniformLocation | null = null;
   private resolutionLocation: WebGLUniformLocation | null = null;
   private warpLocation: WebGLUniformLocation | null = null;
+  private orbitLocation: WebGLUniformLocation | null = null;
+  private blobCentersLocation: WebGLUniformLocation | null = null;
+  private readonly blobCenters = new Float32Array(12);
 
   private resizeObserver: ResizeObserver | null = null;
   private animationFrame = 0;
@@ -253,7 +245,7 @@ export class HeatFieldBackground {
       antialias: false,
       depth: false,
       stencil: false,
-      powerPreference: "high-performance",
+      powerPreference: "low-power",
       preserveDrawingBuffer: false,
     });
 
@@ -301,9 +293,13 @@ export class HeatFieldBackground {
       this.gl = gl;
       this.program = program;
       this.vertexArray = vertexArray;
-      this.timeLocation = gl.getUniformLocation(program, "uTime");
       this.resolutionLocation = gl.getUniformLocation(program, "uResolution");
       this.warpLocation = gl.getUniformLocation(program, "uWarpStrength");
+      this.orbitLocation = gl.getUniformLocation(program, "uOrbit");
+      this.blobCentersLocation = gl.getUniformLocation(
+        program,
+        "uBlobCenters[0]",
+      );
 
       this.canvas.classList.remove("heat-field--fallback");
     } catch (error) {
@@ -393,7 +389,28 @@ export class HeatFieldBackground {
 
     gl.useProgram(this.program);
     gl.bindVertexArray(this.vertexArray);
-    gl.uniform1f(this.timeLocation, time);
+
+    const phase = (time * Math.PI * 2) / 28;
+    const aspect = this.canvas.width / Math.max(this.canvas.height, 1);
+    const orbitX = Math.cos(phase);
+    const orbitY = Math.sin(phase);
+    const centers = this.blobCenters;
+
+    centers[0] = -aspect * 0.44 + 0.12 * Math.sin(phase * 1.2);
+    centers[1] = 0.76;
+    centers[2] = aspect * 0.46 + 0.1 * Math.cos(phase * 0.9);
+    centers[3] = 0.68;
+    centers[4] = 0.1 * Math.sin(phase * 0.84);
+    centers[5] = -0.76 + 0.08 * Math.cos(phase);
+    centers[6] = -aspect * 0.5 + 0.12 * Math.cos(phase * 1.14);
+    centers[7] = 0.02;
+    centers[8] = aspect * 0.52 + 0.1 * Math.sin(phase * 1.06);
+    centers[9] = -0.05;
+    centers[10] = 0.18 * Math.cos(phase * 0.72);
+    centers[11] = 0.2 + 0.12 * Math.sin(phase * 0.91);
+
+    gl.uniform2f(this.orbitLocation, orbitX, orbitY);
+    gl.uniform2fv(this.blobCentersLocation, centers);
     gl.uniform2f(
       this.resolutionLocation,
       this.canvas.width,
@@ -441,9 +458,10 @@ export class HeatFieldBackground {
     this.contextLost = false;
     this.program = null;
     this.vertexArray = null;
-    this.timeLocation = null;
     this.resolutionLocation = null;
     this.warpLocation = null;
+    this.orbitLocation = null;
+    this.blobCentersLocation = null;
     this.initialize();
     this.start();
   };
@@ -468,9 +486,10 @@ export class HeatFieldBackground {
 
     this.program = null;
     this.vertexArray = null;
-    this.timeLocation = null;
     this.resolutionLocation = null;
     this.warpLocation = null;
+    this.orbitLocation = null;
+    this.blobCentersLocation = null;
   }
 
   private enableFallback(message: string): void {

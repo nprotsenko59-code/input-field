@@ -85,7 +85,6 @@ const app = requireElement<HTMLDivElement>("#app");
 app.innerHTML = `
   <div class="scene">
     <canvas class="heat-field" aria-hidden="true"></canvas>
-    <div class="soft-grain" aria-hidden="true"></div>
 
     <main class="converter" aria-labelledby="converter-title">
       <div class="converter__bar">
@@ -218,7 +217,7 @@ updateConversion();
 const heatField = new HeatFieldBackground(canvas, {
   speed: 0.82,
   warpStrength: 0.34,
-  pixelRatioCap: 1.75,
+  pixelRatioCap: 1,
 });
 
 heatField.start();
