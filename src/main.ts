@@ -98,6 +98,20 @@ app.innerHTML = `
           role="tab"
           aria-selected="true"
         >
+          <svg
+            class="converter-modes__icon"
+            viewBox="0 0 20 20"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M3 6H16M13 3L16 6L13 9M17 14H4M7 11L4 14L7 17"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="square"
+              stroke-linejoin="miter"
+            />
+          </svg>
           Convert
         </button>
         <button
@@ -107,6 +121,20 @@ app.innerHTML = `
           aria-selected="false"
           disabled
         >
+          <svg
+            class="converter-modes__icon"
+            viewBox="0 0 20 20"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M4 16L16 4M8 4H16V12"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="square"
+              stroke-linejoin="miter"
+            />
+          </svg>
           Send
         </button>
       </div>
