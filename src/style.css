@@ -24,8 +24,8 @@ body {
   overflow: hidden;
 }
 
-button,
-textarea {
+input,
+select {
   font: inherit;
 }
 
@@ -68,7 +68,7 @@ textarea {
   mix-blend-mode: soft-light;
 }
 
-.composer {
+.converter {
   width: calc(100% - 48px);
   max-width: 960px;
   min-width: 0;
@@ -81,16 +81,10 @@ textarea {
     0 8px 26px rgba(104, 0, 0, 0.2);
 }
 
-.composer__bar,
-.composer__footer {
+.converter__bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-}
-
-.composer__bar {
   min-height: 48px;
   padding: 0 22px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.32);
@@ -98,16 +92,18 @@ textarea {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 12px;
   font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
-.composer__status {
+.converter__status {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   color: rgba(255, 255, 255, 0.45);
 }
 
-.composer__status-dot {
+.converter__status-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -115,86 +111,129 @@ textarea {
   box-shadow: 0 0 12px #ff4d00;
 }
 
-.composer__label {
-  display: block;
-  padding: 30px 30px 8px;
-  color: rgba(255, 255, 255, 0.52);
-  font-size: 13px;
-  font-weight: 600;
+.converter__sections {
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
 }
 
-.composer__input {
+.converter__section {
+  min-height: 192px;
+  padding: 27px 30px 23px;
+}
+
+.converter__section + .converter__section {
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.converter__label {
+  display: block;
+  margin: 0 0 18px;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.converter__value-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 28px;
+  align-items: center;
+}
+
+.converter__amount,
+.converter__output {
   display: block;
   width: 100%;
   min-width: 0;
-  min-height: 176px;
-  padding: 8px 30px 24px;
-  resize: none;
   border: 0;
   outline: 0;
   color: #ffffff;
   background: transparent;
-  overflow-wrap: anywhere;
-  white-space: pre-wrap;
-  font-size: clamp(36px, 4.7vw, 64px);
+  font-size: clamp(48px, 5.3vw, 72px);
   font-weight: 400;
   letter-spacing: -0.01em;
   line-height: 1;
-  caret-color: #ff7a00;
+  font-variant-numeric: tabular-nums;
 }
 
-.composer__input::placeholder {
-  color: rgba(255, 255, 255, 0.94);
-  opacity: 1;
+.converter__amount {
+  appearance: textfield;
+  caret-color: #ff8a00;
 }
 
-.composer__input:focus::placeholder {
-  color: rgba(255, 255, 255, 0.22);
+.converter__amount::-webkit-inner-spin-button,
+.converter__amount::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
 }
 
-.composer:focus-within {
-  box-shadow: 0 34px 100px rgba(104, 0, 0, 0.32);
+.converter__amount:focus {
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 138, 0, 0.8);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 7px;
 }
 
-.composer__footer {
-  min-height: 62px;
-  padding: 10px 14px 10px 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
-  color: rgba(255, 255, 255, 0.36);
+.converter__select-wrap {
+  position: relative;
+  max-width: 260px;
+}
+
+.converter__select-wrap::after {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid rgba(255, 255, 255, 0.5);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+  content: "";
+  pointer-events: none;
+  transform: translateY(-72%) rotate(45deg);
+}
+
+.converter__select {
+  width: 100%;
+  min-width: 140px;
+  height: 48px;
+  padding: 0 44px 0 16px;
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 0;
+  outline: 0;
+  color: #ffffff;
+  background: #050505;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
 }
 
-.composer__button {
-  min-height: 40px;
-  padding: 0 18px;
-  border: 1px solid rgba(255, 255, 255, 0.34);
-  border-radius: 7px;
-  color: #111111;
-  background: #ffffff;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+.converter__select:focus-visible {
+  border-color: #ff8a00;
+}
+
+.converter__meta {
+  margin: 16px 0 0;
+  color: rgba(255, 255, 255, 0.38);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 10px;
-  font-weight: 800;
-  cursor: pointer;
-  transition:
-    transform 160ms ease,
-    background 160ms ease;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.composer__button:hover {
-  transform: translateY(-1px);
-  background: #ffb000;
+.converter__meta--split {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.composer__button:active {
-  transform: translateY(0);
-}
-
-.composer__button:focus-visible {
-  outline: 3px solid #ff8a00;
-  outline-offset: 3px;
+.converter:focus-within {
+  box-shadow: 0 34px 100px rgba(104, 0, 0, 0.32);
 }
 
 .scene__note {
@@ -211,48 +250,65 @@ textarea {
 }
 
 @media (max-width: 640px) {
-  .composer {
+  .converter {
     width: calc(100vw - 28px);
     border-radius: 0;
   }
 
-  .composer__bar {
+  .converter__bar {
     min-height: 42px;
     padding: 0 16px;
     font-size: 10px;
   }
 
-  .composer__label {
-    padding: 24px 20px 6px;
+  .converter__status {
+    font-size: 0;
   }
 
-  .composer__input {
-    min-height: 150px;
-    padding: 6px 20px 20px;
-    font-size: clamp(34px, 11vw, 54px);
+  .converter__section {
+    min-height: 180px;
+    padding: 23px 20px 20px;
   }
 
-  .composer__footer {
-    padding-left: 18px;
+  .converter__label {
+    margin-bottom: 20px;
   }
 
-  .composer__footer > span {
-    display: none;
+  .converter__value-row {
+    gap: 12px;
   }
 
-  .composer__button {
-    width: 100%;
+  .converter__amount,
+  .converter__output {
+    font-size: clamp(40px, 12vw, 52px);
+  }
+
+  .converter__select {
+    min-width: 92px;
+    max-width: 112px;
+    height: 44px;
+    padding-right: 36px;
+    font-size: 12px;
+  }
+
+  .converter__select-wrap {
+    max-width: 112px;
+    overflow: hidden;
+  }
+
+  .converter__meta {
+    margin-top: 18px;
+  }
+
+  .converter__meta--split {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
   }
 
   .scene__note {
     right: 14px;
     bottom: 12px;
     font-size: 8px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .composer__button {
-    transition: none;
   }
 }
