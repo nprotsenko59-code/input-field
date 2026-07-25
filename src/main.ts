@@ -4,7 +4,6 @@ import { HeatFieldBackground } from "./shader-background";
 interface Currency {
   code: string;
   flag: string;
-  name: string;
   unitsPerUsd: number;
   fractionDigits: number;
 }
@@ -13,56 +12,48 @@ const currencies: Currency[] = [
   {
     code: "USD",
     flag: "🇺🇸",
-    name: "US Dollar",
     unitsPerUsd: 1,
     fractionDigits: 2,
   },
   {
     code: "EUR",
     flag: "🇪🇺",
-    name: "Euro",
     unitsPerUsd: 0.92,
     fractionDigits: 2,
   },
   {
     code: "GBP",
     flag: "🇬🇧",
-    name: "British Pound",
     unitsPerUsd: 0.79,
     fractionDigits: 2,
   },
   {
     code: "NOK",
     flag: "🇳🇴",
-    name: "Norwegian Krone",
     unitsPerUsd: 10.93,
     fractionDigits: 2,
   },
   {
     code: "ILS",
     flag: "🇮🇱",
-    name: "Israeli New Shekel",
     unitsPerUsd: 3.62,
     fractionDigits: 2,
   },
   {
     code: "JPY",
     flag: "🇯🇵",
-    name: "Japanese Yen",
     unitsPerUsd: 157.3,
     fractionDigits: 0,
   },
   {
     code: "CAD",
     flag: "🇨🇦",
-    name: "Canadian Dollar",
     unitsPerUsd: 1.37,
     fractionDigits: 2,
   },
   {
     code: "AUD",
     flag: "🇦🇺",
-    name: "Australian Dollar",
     unitsPerUsd: 1.53,
     fractionDigits: 2,
   },
@@ -108,7 +99,6 @@ app.innerHTML = `
               value="1000"
               autocomplete="off"
               spellcheck="false"
-              aria-describedby="from-currency-name"
             />
             <div class="converter__select-wrap">
               <select
@@ -120,8 +110,29 @@ app.innerHTML = `
               </select>
             </div>
           </div>
-          <p class="converter__meta" id="from-currency-name">US Dollar</p>
         </section>
+
+        <button
+          class="converter__swap"
+          type="button"
+          aria-label="Swap currencies"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M12 4V18M7 13L12 18L17 13"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="square"
+              stroke-linejoin="miter"
+            />
+          </svg>
+        </button>
 
         <section class="converter__section">
           <label class="converter__label" for="converted-amount">To</label>
@@ -133,7 +144,7 @@ app.innerHTML = `
               inputmode="decimal"
               autocomplete="off"
               spellcheck="false"
-              aria-describedby="to-currency-name conversion-rate"
+              aria-describedby="conversion-rate"
             />
             <div class="converter__select-wrap">
               <select
@@ -145,10 +156,10 @@ app.innerHTML = `
               </select>
             </div>
           </div>
-          <div class="converter__meta converter__meta--split">
-            <span id="to-currency-name">Norwegian Krone</span>
-            <span id="conversion-rate"></span>
-          </div>
+          <p
+            class="converter__meta converter__meta--rate"
+            id="conversion-rate"
+          ></p>
         </section>
       </div>
     </main>
@@ -166,10 +177,8 @@ const fromSelect =
 const toSelect = requireElement<HTMLSelectElement>("#to-currency");
 const convertedAmount =
   requireElement<HTMLInputElement>("#converted-amount");
-const fromCurrencyName =
-  requireElement<HTMLElement>("#from-currency-name");
-const toCurrencyName =
-  requireElement<HTMLElement>("#to-currency-name");
+const swapButton =
+  requireElement<HTMLButtonElement>(".converter__swap");
 const conversionRate =
   requireElement<HTMLElement>("#conversion-rate");
 
@@ -245,8 +254,6 @@ function updateConversion(
   const targetCurrency =
     direction === "from" ? toCurrency : fromCurrency;
 
-  fromCurrencyName.textContent = fromCurrency.name;
-  toCurrencyName.textContent = toCurrency.name;
   conversionRate.textContent = `1 ${fromCurrency.code} = ${new Intl.NumberFormat(
     undefined,
     {
@@ -271,6 +278,18 @@ convertedAmount.addEventListener("input", () => {
 });
 fromSelect.addEventListener("change", () => updateConversion());
 toSelect.addEventListener("change", () => updateConversion());
+swapButton.addEventListener("click", () => {
+  const previousFromCode = fromSelect.value;
+  const previousFromAmount = amountInput.value;
+
+  fromSelect.value = toSelect.value;
+  toSelect.value = previousFromCode;
+  amountInput.value = convertedAmount.value;
+  convertedAmount.value = previousFromAmount;
+  conversionDirection = "from";
+  updateConversion();
+  amountInput.focus();
+});
 updateConversion();
 
 const heatField = new HeatFieldBackground(canvas, {
