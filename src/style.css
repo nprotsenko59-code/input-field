@@ -183,6 +183,35 @@ select {
   transform: translateY(-72%) rotate(45deg);
 }
 
+.converter__select-display {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  z-index: 1;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: #ffffff;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-weight: 700;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.converter__select-flag {
+  font-family:
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Noto Color Emoji",
+    sans-serif;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.converter__select-code {
+  font-size: 13px;
+}
+
 .converter__select {
   width: 100%;
   min-width: 140px;
@@ -192,11 +221,16 @@ select {
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 0;
   outline: 0;
-  color: #ffffff;
+  color: transparent;
   background: #050505;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
+}
+
+.converter__select option {
+  color: #ffffff;
+  background: #050505;
 }
 
 .converter__select:focus-visible {
@@ -262,12 +296,25 @@ select {
     max-width: 112px;
     height: 44px;
     padding-right: 36px;
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .converter__select-wrap {
     max-width: 112px;
     overflow: hidden;
+  }
+
+  .converter__select-display {
+    left: 12px;
+    gap: 6px;
+  }
+
+  .converter__select-flag {
+    font-size: 18px;
+  }
+
+  .converter__select-code {
+    font-size: 12px;
   }
 
   .converter__meta {

@@ -101,6 +101,19 @@ app.innerHTML = `
               spellcheck="false"
             />
             <div class="converter__select-wrap">
+              <span
+                class="converter__select-display"
+                aria-hidden="true"
+              >
+                <span
+                  class="converter__select-flag"
+                  id="from-currency-flag"
+                >🇺🇸</span>
+                <span
+                  class="converter__select-code"
+                  id="from-currency-code"
+                >USD</span>
+              </span>
               <select
                 id="from-currency"
                 class="converter__select"
@@ -147,6 +160,19 @@ app.innerHTML = `
               aria-describedby="conversion-rate"
             />
             <div class="converter__select-wrap">
+              <span
+                class="converter__select-display"
+                aria-hidden="true"
+              >
+                <span
+                  class="converter__select-flag"
+                  id="to-currency-flag"
+                >🇳🇴</span>
+                <span
+                  class="converter__select-code"
+                  id="to-currency-code"
+                >NOK</span>
+              </span>
               <select
                 id="to-currency"
                 class="converter__select"
@@ -177,6 +203,14 @@ const fromSelect =
 const toSelect = requireElement<HTMLSelectElement>("#to-currency");
 const convertedAmount =
   requireElement<HTMLInputElement>("#converted-amount");
+const fromCurrencyFlag =
+  requireElement<HTMLElement>("#from-currency-flag");
+const fromCurrencyCode =
+  requireElement<HTMLElement>("#from-currency-code");
+const toCurrencyFlag =
+  requireElement<HTMLElement>("#to-currency-flag");
+const toCurrencyCode =
+  requireElement<HTMLElement>("#to-currency-code");
 const swapButton =
   requireElement<HTMLButtonElement>(".converter__swap");
 const conversionRate =
@@ -254,6 +288,10 @@ function updateConversion(
   const targetCurrency =
     direction === "from" ? toCurrency : fromCurrency;
 
+  fromCurrencyFlag.textContent = fromCurrency.flag;
+  fromCurrencyCode.textContent = fromCurrency.code;
+  toCurrencyFlag.textContent = toCurrency.flag;
+  toCurrencyCode.textContent = toCurrency.code;
   conversionRate.textContent = `1 ${fromCurrency.code} = ${new Intl.NumberFormat(
     undefined,
     {
