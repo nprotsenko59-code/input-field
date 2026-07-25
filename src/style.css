@@ -1,0 +1,263 @@
+:root {
+  color: #ffffff;
+  background: #ff5a00;
+  font-family:
+    Inter, "Helvetica Neue", Helvetica, Arial, system-ui, -apple-system,
+    sans-serif;
+  font-synthesis: none;
+  text-rendering: geometricPrecision;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+.scene {
+  position: relative;
+  display: grid;
+  width: 100vw;
+  min-height: 100svh;
+  place-items: center;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 50% 105%, #ff0500 0%, transparent 52%),
+    radial-gradient(circle at 15% 0%, #ffba09 0%, transparent 45%),
+    linear-gradient(180deg, #ff9500 0%, #ff5a00 54%, #ff1600 100%);
+}
+
+.heat-field,
+.soft-grain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.heat-field {
+  z-index: -2;
+  display: block;
+}
+
+.heat-field--fallback {
+  visibility: hidden;
+}
+
+.soft-grain {
+  z-index: -1;
+  opacity: 0.055;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+  mix-blend-mode: soft-light;
+}
+
+.composer {
+  width: calc(100% - 48px);
+  max-width: 960px;
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 0;
+  overflow: hidden;
+  background: #050505;
+  box-shadow:
+    0 30px 90px rgba(104, 0, 0, 0.28),
+    0 8px 26px rgba(104, 0, 0, 0.2);
+}
+
+.composer__bar,
+.composer__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.composer__bar {
+  min-height: 48px;
+  padding: 0 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.32);
+  color: rgba(255, 255, 255, 0.76);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.composer__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.composer__status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff9b00;
+  box-shadow: 0 0 12px #ff4d00;
+}
+
+.composer__label {
+  display: block;
+  padding: 30px 30px 8px;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.composer__input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 176px;
+  padding: 8px 30px 24px;
+  resize: none;
+  border: 0;
+  outline: 0;
+  color: #ffffff;
+  background: transparent;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  font-size: clamp(36px, 4.7vw, 64px);
+  font-weight: 650;
+  letter-spacing: -0.05em;
+  line-height: 0.98;
+  caret-color: #ff7a00;
+}
+
+.composer__input::placeholder {
+  color: rgba(255, 255, 255, 0.94);
+  opacity: 1;
+}
+
+.composer__input:focus::placeholder {
+  color: rgba(255, 255, 255, 0.22);
+}
+
+.composer:focus-within {
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 34px 100px rgba(104, 0, 0, 0.32),
+    0 0 0 3px rgba(255, 255, 255, 0.12);
+}
+
+.composer__footer {
+  min-height: 62px;
+  padding: 10px 14px 10px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.36);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.composer__button {
+  min-height: 40px;
+  padding: 0 18px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 7px;
+  color: #111111;
+  background: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    background 160ms ease;
+}
+
+.composer__button:hover {
+  transform: translateY(-1px);
+  background: #ffb000;
+}
+
+.composer__button:active {
+  transform: translateY(0);
+}
+
+.composer__button:focus-visible {
+  outline: 3px solid #ff8a00;
+  outline-offset: 3px;
+}
+
+.scene__note {
+  position: absolute;
+  right: 22px;
+  bottom: 18px;
+  margin: 0;
+  color: rgba(0, 0, 0, 0.52);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 640px) {
+  .composer {
+    width: calc(100vw - 28px);
+    border-radius: 0;
+  }
+
+  .composer__bar {
+    min-height: 42px;
+    padding: 0 16px;
+    font-size: 10px;
+  }
+
+  .composer__label {
+    padding: 24px 20px 6px;
+  }
+
+  .composer__input {
+    min-height: 150px;
+    padding: 6px 20px 20px;
+    font-size: clamp(34px, 11vw, 54px);
+  }
+
+  .composer__footer {
+    padding-left: 18px;
+  }
+
+  .composer__footer > span {
+    display: none;
+  }
+
+  .composer__button {
+    width: 100%;
+  }
+
+  .scene__note {
+    right: 14px;
+    bottom: 12px;
+    font-size: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .composer__button {
+    transition: none;
+  }
+}
