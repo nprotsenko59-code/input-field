@@ -117,10 +117,12 @@ void main() {
     uBlobCenters[4],
     vec2(0.46, 0.88)
   );
-  field -= 0.18 * blob(
+
+  // A contrasting orange pool makes the lower field's motion easy to read.
+  field += 0.22 * blob(
     warpedPoint,
     uBlobCenters[5],
-    vec2(0.76, 0.54)
+    vec2(0.82, 0.58)
   );
 
   // Keep the motion organic but deliberately broad—never smoky or grainy.
@@ -400,14 +402,14 @@ export class HeatFieldBackground {
     centers[1] = 0.76;
     centers[2] = aspect * 0.46 + 0.1 * Math.cos(phase * 0.9);
     centers[3] = 0.68;
-    centers[4] = 0.1 * Math.sin(phase * 0.84);
-    centers[5] = -0.76 + 0.08 * Math.cos(phase);
-    centers[6] = -aspect * 0.5 + 0.12 * Math.cos(phase * 1.14);
-    centers[7] = 0.02;
-    centers[8] = aspect * 0.52 + 0.1 * Math.sin(phase * 1.06);
-    centers[9] = -0.05;
-    centers[10] = 0.18 * Math.cos(phase * 0.72);
-    centers[11] = 0.2 + 0.12 * Math.sin(phase * 0.91);
+    centers[4] = 0.38 * Math.sin(phase * 0.84);
+    centers[5] = -0.72 + 0.16 * Math.cos(phase);
+    centers[6] = -aspect * 0.5 + 0.22 * Math.cos(phase * 1.14);
+    centers[7] = -0.05 + 0.18 * Math.sin(phase * 0.78);
+    centers[8] = aspect * 0.52 + 0.2 * Math.sin(phase * 1.06);
+    centers[9] = -0.12 + 0.16 * Math.cos(phase * 0.86);
+    centers[10] = 0.52 * Math.cos(phase * 0.72);
+    centers[11] = -0.42 + 0.14 * Math.sin(phase * 0.91);
 
     gl.uniform2f(this.orbitLocation, orbitX, orbitY);
     gl.uniform2fv(this.blobCentersLocation, centers);
