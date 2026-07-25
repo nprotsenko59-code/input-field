@@ -215,7 +215,7 @@ toSelect.addEventListener("change", updateConversion);
 updateConversion();
 
 const heatField = new HeatFieldBackground(canvas, {
-  speed: 1.3,
+  speed: 1.6,
   warpStrength: 0.34,
   pixelRatioCap: 1,
 });
