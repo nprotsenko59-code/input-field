@@ -195,7 +195,7 @@ select {
   color: #ffffff;
   background: #050505;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
 }
 
@@ -262,7 +262,7 @@ select {
     max-width: 112px;
     height: 44px;
     padding-right: 36px;
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .converter__select-wrap {
