@@ -3,6 +3,7 @@ import { HeatFieldBackground } from "./shader-background";
 
 interface Currency {
   code: string;
+  flag: string;
   name: string;
   unitsPerUsd: number;
   fractionDigits: number;
@@ -11,48 +12,56 @@ interface Currency {
 const currencies: Currency[] = [
   {
     code: "USD",
+    flag: "🇺🇸",
     name: "US Dollar",
     unitsPerUsd: 1,
     fractionDigits: 2,
   },
   {
     code: "EUR",
+    flag: "🇪🇺",
     name: "Euro",
     unitsPerUsd: 0.92,
     fractionDigits: 2,
   },
   {
     code: "GBP",
+    flag: "🇬🇧",
     name: "British Pound",
     unitsPerUsd: 0.79,
     fractionDigits: 2,
   },
   {
     code: "NOK",
+    flag: "🇳🇴",
     name: "Norwegian Krone",
     unitsPerUsd: 10.93,
     fractionDigits: 2,
   },
   {
     code: "ILS",
+    flag: "🇮🇱",
     name: "Israeli New Shekel",
     unitsPerUsd: 3.62,
     fractionDigits: 2,
   },
   {
     code: "JPY",
+    flag: "🇯🇵",
     name: "Japanese Yen",
     unitsPerUsd: 157.3,
     fractionDigits: 0,
   },
   {
     code: "CAD",
+    flag: "🇨🇦",
     name: "Canadian Dollar",
     unitsPerUsd: 1.37,
     fractionDigits: 2,
   },
   {
     code: "AUD",
+    flag: "🇦🇺",
     name: "Australian Dollar",
     unitsPerUsd: 1.53,
     fractionDigits: 2,
@@ -62,10 +71,10 @@ const currencies: Currency[] = [
 function currencyOptions(selectedCode: string): string {
   return currencies
     .map(
-      ({ code }) =>
+      ({ code, flag }) =>
         `<option value="${code}" ${
           code === selectedCode ? "selected" : ""
-        }>${code}</option>`,
+        }>${flag} ${code}</option>`,
     )
     .join("");
 }
@@ -86,18 +95,10 @@ app.innerHTML = `
   <div class="scene">
     <canvas class="heat-field" aria-hidden="true"></canvas>
 
-    <main class="converter" aria-labelledby="converter-title">
-      <div class="converter__bar">
-        <span id="converter-title">Currency converter</span>
-        <span class="converter__status">
-          <span class="converter__status-dot"></span>
-          Live calculation
-        </span>
-      </div>
-
+    <main class="converter" aria-label="Currency converter">
       <div class="converter__sections">
         <section class="converter__section">
-          <label class="converter__label" for="amount">Convert from</label>
+          <label class="converter__label" for="amount">Convert</label>
           <div class="converter__value-row">
             <input
               id="amount"
@@ -123,7 +124,7 @@ app.innerHTML = `
         </section>
 
         <section class="converter__section">
-          <p class="converter__label">Convert to</p>
+          <p class="converter__label">To</p>
           <div class="converter__value-row">
             <output
               id="converted-amount"

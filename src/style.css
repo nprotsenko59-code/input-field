@@ -73,36 +73,6 @@ select {
     0 8px 26px rgba(104, 0, 0, 0.2);
 }
 
-.converter__bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 48px;
-  padding: 0 22px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.32);
-  color: rgba(255, 255, 255, 0.76);
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.converter__status {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: rgba(255, 255, 255, 0.45);
-}
-
-.converter__status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #ff9b00;
-  box-shadow: 0 0 12px #ff4d00;
-}
-
 .converter__sections {
   display: grid;
   grid-template-rows: repeat(2, minmax(0, 1fr));
@@ -245,16 +215,6 @@ select {
   .converter {
     width: calc(100vw - 28px);
     border-radius: 0;
-  }
-
-  .converter__bar {
-    min-height: 42px;
-    padding: 0 16px;
-    font-size: 10px;
-  }
-
-  .converter__status {
-    font-size: 0;
   }
 
   .converter__section {
